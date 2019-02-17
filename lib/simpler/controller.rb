@@ -15,7 +15,7 @@ module Simpler
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
 
-      set_default_headers
+      set_headers
       send(action)
       write_response
 
@@ -28,7 +28,9 @@ module Simpler
       self.class.name.match('(?<name>.+)Controller')[:name].downcase
     end
 
-    def set_default_headers
+    def set_headers(plain = false)
+      return @response['Content-Type'] = 'text/plain' if plain
+
       @response['Content-Type'] = 'text/html'
     end
 
@@ -47,7 +49,13 @@ module Simpler
     end
 
     def render(template)
+      set_headers(true) if template.keys.first == :plain
+
       @request.env['simpler.template'] = template
+    end
+
+    def status(status)
+      @response.status = status
     end
 
   end
