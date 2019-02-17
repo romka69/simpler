@@ -6,6 +6,8 @@ class TestsController < Simpler::Controller
     render plain: 'Plain text response'
 
     status 201
+
+    headers['Content-Type'] = 'text/html'
   end
 
   def create
