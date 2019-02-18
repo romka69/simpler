@@ -9,19 +9,36 @@ module Simpler
         @path = path
         @controller = controller
         @action = action
+        @init_path = path_regexp(@path)
       end
 
       def match?(method, path)
-        init_path = parse_path(@path)
-        @method == method && length_ok?(path) && (/^#{init_path}$/).match?(path)
+        @method == method && correct_path?(path)
+      end
+
+      def route_param(env)
+        params = {}
+        path = env['PATH_INFO']
+        env_path = path.split('/')
+        request_path = @path.split('/')
+
+        request_path.each.with_index do |piece, i|
+          params[piece.delete(':').to_sym] = env_path[i] if piece.match?(':')
+        end
+
+        params
       end
 
       private
 
-      def parse_path(path)
+      def path_regexp(path)
         handler_path = path.split('/')
         handler_path.map { |piece| piece.replace('.*') if piece.match?(':') }
         handler_path.join('/')
+      end
+
+      def correct_path?(path)
+        length_ok?(path) && (/^#{@init_path}$/).match?(path)
       end
 
       def length_ok?(path)

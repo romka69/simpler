@@ -10,7 +10,7 @@ module Simpler
     end
 
     def render(binding)
-      ERB.new(template_path).result(binding)
+      ERB.new(template_data).result(binding)
     end
 
     private
@@ -27,7 +27,7 @@ module Simpler
       @env['simpler.template']
     end
 
-    def template_path
+    def template_data
       if template.nil?
         path = [controller.name, action].join('/')
 

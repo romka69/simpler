@@ -28,10 +28,14 @@ module Simpler
       self.class.name.match('(?<name>.+)Controller')[:name].downcase
     end
 
-    def set_headers(plain = false)
-      return @response['Content-Type'] = 'text/plain' if plain
-
-      @response['Content-Type'] = 'text/html'
+    def set_headers(type = :html)
+      headers['Content-Type'] = if type == :plain
+                                  'text/plain'
+                                #elsif type == :json
+                                #  'text/json'
+                                else
+                                  'text/html'
+                                end
     end
 
     def write_response
@@ -45,11 +49,11 @@ module Simpler
     end
 
     def params
-      @request.params.merge(@request.env['simpler.route_params'])
+      @request.env['simpler.params'].merge!(@request.params)
     end
 
     def render(template)
-      set_headers(true) if template.keys.first == :plain
+      set_headers(:plain) if template.keys.first == :plain
 
       @request.env['simpler.template'] = template
     end
