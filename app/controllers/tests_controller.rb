@@ -1,13 +1,13 @@
 class TestsController < Simpler::Controller
 
   def index
-    #@time = Time.now
+    @time = Time.now
 
-    render plain: 'Plain text response'
+    #render plain: 'Plain text response'
 
-    status 201
+    #status 201
 
-    headers['Content-Type'] = 'text/html'
+    #headers['Content-Type'] = 'text/html'
   end
 
   def create
