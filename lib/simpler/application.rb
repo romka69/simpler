@@ -28,6 +28,10 @@ module Simpler
 
     def call(env)
       route = @router.route_for(env)
+
+      return not_found if route.nil?
+
+      env['simpler.params'] = merge_params(env, route)
       controller = route.controller.new(env)
       action = route.action
 
@@ -52,6 +56,15 @@ module Simpler
 
     def make_response(controller, action)
       controller.make_response(action)
+    end
+
+    def not_found
+      [404, { 'Content-Type' => 'text/plain' }, ['404. Not found.']]
+    end
+
+    def merge_params(env, route)
+      request = Rack::Request.new(env)
+      route.route_param(env).merge(request.params)
     end
 
   end
