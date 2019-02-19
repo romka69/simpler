@@ -3,6 +3,8 @@ require_relative 'view'
 module Simpler
   class Controller
 
+    TYPES = { html: 'text/html', plain: 'text/plain' }.freeze
+
     attr_reader :name, :request, :response
 
     def initialize(env)
@@ -29,9 +31,7 @@ module Simpler
     end
 
     def set_headers(type = :html)
-      types = { html: 'text/html', plain: 'text/plain' }
-
-      headers['Content-Type'] = types[type]
+      headers['Content-Type'] = TYPES.fetch(type, :html)
     end
 
     def write_response

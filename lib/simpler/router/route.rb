@@ -17,23 +17,13 @@ module Simpler
       end
 
       def route_param(env)
-        # params = {}
-        request = Rack::Request.new(env)
         path = env['PATH_INFO']
         env_path = path.split('/')
         request_path = @path.split('/')
 
-        # request_path.each.with_index do |piece, i|
-        #   params[piece.delete(':').to_sym] = env_path[i] if piece.match?(':')
-        # end
-
-        # params.merge(request.params)
-
-        route_params = request_path.each.with_index.with_object({}) do |(each, i), params|
+        request_path.each.with_index.with_object({}) do |(each, i), params|
           params[each.delete(':').to_sym] = env_path[i] if each.include?(':')
         end
-
-        route_params.merge(request.params)
       end
 
       private
