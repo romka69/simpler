@@ -29,13 +29,9 @@ module Simpler
     end
 
     def set_headers(type = :html)
-      headers['Content-Type'] = if type == :plain
-                                  'text/plain'
-                                #elsif type == :json
-                                #  'text/json'
-                                else
-                                  'text/html'
-                                end
+      types = { html: 'text/html', plain: 'text/plain' }
+
+      headers['Content-Type'] = types[type]
     end
 
     def write_response
@@ -49,7 +45,7 @@ module Simpler
     end
 
     def params
-      @request.env['simpler.params'].merge!(@request.params)
+      @request.env['simpler.params']
     end
 
     def render(template)

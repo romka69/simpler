@@ -9,7 +9,7 @@ module Simpler
         @path = path
         @controller = controller
         @action = action
-        @init_path = path_regexp(@path)
+        @path_regexp = path_regexp(@path)
       end
 
       def match?(method, path)
@@ -17,16 +17,23 @@ module Simpler
       end
 
       def route_param(env)
-        params = {}
+        # params = {}
+        request = Rack::Request.new(env)
         path = env['PATH_INFO']
         env_path = path.split('/')
         request_path = @path.split('/')
 
-        request_path.each.with_index do |piece, i|
-          params[piece.delete(':').to_sym] = env_path[i] if piece.match?(':')
+        # request_path.each.with_index do |piece, i|
+        #   params[piece.delete(':').to_sym] = env_path[i] if piece.match?(':')
+        # end
+
+        # params.merge(request.params)
+
+        route_params = request_path.each.with_index.with_object({}) do |(each, i), params|
+          params[each.delete(':').to_sym] = env_path[i] if each.include?(':')
         end
 
-        params
+        route_params.merge(request.params)
       end
 
       private
@@ -38,7 +45,7 @@ module Simpler
       end
 
       def correct_path?(path)
-        length_ok?(path) && (/^#{@init_path}$/).match?(path)
+        length_ok?(path) && (/^#{@path_regexp}$/).match?(path)
       end
 
       def length_ok?(path)
